@@ -1,0 +1,5 @@
+{
+  "name": "GlarusAdvertising AG",
+  "taxid": "{{request.requestLine.pathSegments.[3]}}",
+  "trustlevel": "OK"
+}

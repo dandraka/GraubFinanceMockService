@@ -1,0 +1,7 @@
+*.jar
+lock.json
+**/.terraform/*
+*.plan
+*.tfstate
+*.info
+*.backup

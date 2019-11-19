@@ -1,0 +1,54 @@
+name: GraubFinanceMockServiceAutoDeploy
+
+trigger:
+- master
+pool:
+  vmImage: 'ubuntu-latest'
+variables:
+- group: azureconnectioncredentials
+- group: azurenames
+
+jobs:
+  - job: Build
+    displayName: Build docker image
+    steps:     
+    - task: Docker@2
+      enabled: true
+      inputs:
+        containerRegistry: 'dockerhub-graubfinancemock'
+        repository: '$(dockerimage)'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
+        tags: |
+          $(dockerimageversion)
+          1.0.$(Build.BuildId)
+  - job: Deploy
+    displayName: Deploy to Azure
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'Free Trial (XXXXXXXXXXXXXXX)'
+        scriptType: 'pscore'
+        scriptLocation: 'scriptPath'
+        scriptPath: '$(Build.SourcesDirectory)/devops/cleanup.ps1'
+        arguments: '-rgName ''$(baseName)'''
+        workingDirectory: '$(Build.SourcesDirectory)/devops/'
+    - task: replacetokens@3
+      inputs:
+        targetFiles: '**/*.tfvars'
+        encoding: 'auto'
+        writeBOM: false
+        actionOnMissing: 'warn'
+        keepToken: false
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+    - task: TerraformInstaller@0
+      inputs:
+        terraformVersion: '0.12.15'
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'Free Trial (XXXXXXXXXXXXXXX)'
+        scriptType: 'pscore'
+        scriptLocation: 'scriptPath'
+        scriptPath: '$(Build.SourcesDirectory)/devops/terraformdeploy-pipeline.ps1'
+        workingDirectory: '$(Build.SourcesDirectory)/devops'

@@ -1,0 +1,69 @@
+{
+	"mappings": [	
+		{
+			"priority": 10,
+			"request": {
+				"method": "GET",
+				"urlPattern": "/api/1.0/CustomerTrust/([a-zA-Z0-9-.]{1,})",
+				"headers": {
+					"Authorization": {
+						"contains": "Bearer"
+					}
+				}
+			},
+			"response": {
+				"status": 200,
+				"bodyFileName": "CustomerTrustInfo.json"
+			}
+		},
+		{
+			"priority": 20,
+			"request": {
+				"method": "POST",
+				"urlPattern": "/api/1.0/CustomerTrust/([a-zA-Z0-9-.]{1,100})",
+				"headers": {
+					"Authorization": {
+						"contains": "Bearer"
+					}
+				}
+			},
+			"response": {
+				"status": 200,
+				"bodyFileName": "ReportStatus.json"
+			}
+		},		
+		{
+			"priority": 90,
+			"request": {
+				"method": "ANY",
+				"urlPattern": "/api(.*)",
+				"headers": {
+					"Authorization": {
+						"contains": "Bearer"
+					}
+				}
+			},
+			"response": {
+				"status": 404,
+				"body": "Server path {{request.path}} not found",
+				"headers": {
+					"Content-Type": "text/plain"
+				}					
+			}
+		},			
+		{
+			"priority": 99,
+			"request": {
+				"method": "ANY",
+				"urlPattern": "/api(.*)"
+			},
+			"response": {
+				"status": 401,
+				"body": "401 Unauthorized",
+				"headers": {
+					"Content-Type": "text/plain"
+				}				
+			}
+		}
+	]
+}

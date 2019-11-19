@@ -1,0 +1,13 @@
+{
+    "request": {
+        "method": "GET",
+        "url": "/servicehealth"
+    },
+    "response": {
+        "status": 200,
+        "body": "Service is up and running!",
+        "headers": {
+            "Content-Type": "text/plain"
+        }
+    }
+}

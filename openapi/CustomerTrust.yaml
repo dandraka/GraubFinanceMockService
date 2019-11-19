@@ -1,0 +1,97 @@
+openapi: "3.0.2"
+info:
+  title: GraubFinance Customer Trust service
+  version: "1.0"
+servers:
+  - url: http://localhost:8888/api/1.0/
+    description: local dev machine
+  - url: https://graubfinancemock.azurewebsites.net/api/1.0/
+    description: mocking service
+  - url: http://api-test.graubfinance.ch/api/1.0/    
+    description: staging
+  - url: http://api.graubfinance.ch/api/1.0/  
+    description: production
+paths:
+  /CustomerTrust/{taxid}:
+    get:
+      operationId: GetCustomerTrustInfo
+      summary: Reads info about a certain customer
+      parameters:
+        - name: taxid
+          in: path
+          description: Customer's tax id
+          required: true
+          schema:
+            type: string
+          example: "CHE-123.456.789"
+      responses:
+        '200':
+          description: CustomerTrustInfo
+          content:
+            application/json:    
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "GlarusAdvertising AG"
+                  taxid:
+                    type: string
+                    example: "CHE-123.456.789"
+                  trustlevel:
+                    type: string                
+                    enum: [OK, WARN, BAD]
+                    example: "OK"
+        '401':
+          description: Unauthorized, JWT token not present or invalid
+        '403':
+          description: JWT token valid but does not contain necessary scope 
+        '404':
+          description: Customer tax id not found
+    post:
+      operationId: PostCustomerTrustReport
+      summary: Sends info about a certain customer following a financial transaction 
+      parameters:
+        - name: taxid
+          in: path
+          description: Customer's tax id
+          required: true
+          schema:
+            type: string
+          example: "CHE-123.456.789"   
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reportid:
+                  type: string
+                  example: "2dcc02d9-6402-4ce9-bf44-3d2cbe8bcd5e"
+                reporttaxid:
+                  type: string
+                  example: "CHE-123.456.789"
+                taxid:
+                  type: string
+                  example: "CHE-123.456.789"
+                trustlevel:
+                  type: string                
+                  enum: [OK, WARN, BAD]
+                  example: "OK"
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Unauthorized, JWT token not present or invalid
+        '403':
+          description: JWT token valid but does not contain necessary scope 
+        '404':
+          description: Customer tax id not found                
+components:
+  securitySchemes:
+    OAuth2:          
+      type: http
+      scheme: bearer
+      bearerFormat: JWT            
+security: 
+  - OAuth2: [CustomerTrust]

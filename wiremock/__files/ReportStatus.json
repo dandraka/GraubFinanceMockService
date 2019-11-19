@@ -1,0 +1,4 @@
+{
+    "reportid": "{{jsonPath request.body '$.reportid'}}",
+    "status": "OK"
+}
